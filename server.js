@@ -21,11 +21,11 @@ const apiRouter = require('./server/api');
 
 app.use('/api', apiRouter);
 
-app.param('minionId', (req, res, next, id) => {
-  const minionId = Number(id);
-  req.id = minionId;
-  next();
-});
+// app.param('minionId', (req, res, next, id) => {
+//   const minionId = Number(id);
+//   req.id = minionId;
+//   next();
+// });
 
 // This conditional is here for testing purposes:
 if (!module.parent) { 
