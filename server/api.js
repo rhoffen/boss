@@ -1,6 +1,6 @@
 const express = require('express');
 const apiRouter = express.Router();
-const app = express();
+//const app = express();
 
 const {
     createMeeting,
@@ -23,6 +23,15 @@ apiRouter.get('/minions/:minionId', (req, res, next) => {
     if (!minion) {
         res.status(404).send();
     }
+    res.send(minion);
+});
+
+apiRouter.put('/minions/:minionId', (req, res, next) => {
+    const minion = getFromDatabaseById('minions', req.params.minionId);
+    if (!minion) {
+        res.status(404).send();
+    }
+    console.log(req.body);
     res.send(minion);
 });
 
