@@ -12,9 +12,31 @@ const {
     deleteAllFromDatabase,
   } = require('./db.js');
 
-apiRouter.get('/minions', (req, res, next) => {
-    const minionsList = getAllFromDatabase('minions');
-    res.send(minionsList);
+apiRouter.use('/', (req, res, next) => {
+    //console.log(req.method);
+    //console.log(req.path);
+    const url = req.path;
+    const getRequestRoute = (url) => {
+    url.split('/').filter(segment => segment);
+    }
+    const reqType = getRequestRoute[0];
+    req.params.reqType = reqType;
+    req.path = `/${reqType}`
+    if (getRequestRoute[1]) {
+        reqId = getRequestRoute[1];
+        req.params.id = reqId;
+        req.path += `/${id}`
+    };
+    //console.log(req.path);
+    next();
+});
+
+//apiRouter.get('/minions', (req, res, next) => {
+apiRouter.get(`/:reqType`, (req, res, next) => { 
+    //const minionsList = getAllFromDatabase('minions');
+    const list = getAllFromDatabase(req.params.reqType);
+    //res.send(minionsList);
+    res.send(list);
   });
 
 apiRouter.get('/minions/:minionId', (req, res, next) => {
