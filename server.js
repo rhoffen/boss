@@ -19,8 +19,10 @@ const bodyParser = require('body-parser');
 
 const apiRouter = require('./server/api');
 
-app.use('/api', apiRouter);
 app.use(bodyParser.json());
+
+app.use('/api', apiRouter);
+
 
 // app.param('minionId', (req, res, next, id) => {
 //   const minionId = Number(id);

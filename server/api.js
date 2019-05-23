@@ -12,7 +12,6 @@ const {
     deleteAllFromDatabase,
   } = require('./db.js');
 
-
 apiRouter.get('/minions', (req, res, next) => {
     const minionsList = getAllFromDatabase('minions');
     res.send(minionsList);
@@ -27,11 +26,22 @@ apiRouter.get('/minions/:minionId', (req, res, next) => {
 });
 
 apiRouter.put('/minions/:minionId', (req, res, next) => {
-    const minion = getFromDatabaseById('minions', req.params.minionId);
+    const id = req.params.minionId;
+  
+    let minion = getFromDatabaseById('minions', id);
+ 
     if (!minion) {
         res.status(404).send();
     }
-    console.log(req.body);
+ 
+    const {name, title, weaknesses, salary} = req.body;
+
+    if (name) {minion.name = name};
+    if (title) {minion.title = title};
+    if (weaknesses) {minion.weaknesses = weaknesses};
+    if (salary) {minion.salary = salary};
+
+    updateInstanceInDatabase('minion', minion);
     res.send(minion);
 });
 
