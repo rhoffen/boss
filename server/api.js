@@ -45,7 +45,19 @@ apiRouter.put('/minions/:minionId', (req, res, next) => {
     res.send(minion);
 });
 
+apiRouter.post('/minions', (req, res, next) => {
+    const addMinion = addToDatabase('minions', req.body);
+    res.status(201).send(addMinion);
+});
 
+apiRouter.delete('/minions/:minionId', (req, res, next) => {
+    const deleted = deleteFromDatabasebyId('minions', req.params.minionId);
+    if (deleted) {
+        res.status(204).send();
+    } else {
+        res.status(404).send();
+    }
+});
 
 
 
