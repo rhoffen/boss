@@ -39,41 +39,39 @@ apiRouter.get(`/:reqType`, (req, res, next) => {
     res.send(list);
   });
 
-apiRouter.get('/minions/:minionId', (req, res, next) => {
-    const minion = getFromDatabaseById('minions', req.params.minionId);
-    if (!minion) {
+apiRouter.get('/:reqType/:id', (req, res, next) => {
+    const item = getFromDatabaseById(req.params.reqType, req.params.id);
+    if (!item) {
         res.status(404).send();
     }
-    res.send(minion);
+    res.send(item);
 });
 
-apiRouter.put('/minions/:minionId', (req, res, next) => {
-    const id = req.params.minionId;
+apiRouter.put('/:reqType/:id', (req, res, next) => {
+    const id = req.params.id;
+    const reqType = req.params.reqType;
   
-    let minion = getFromDatabaseById('minions', id);
- 
-    if (!minion) {
+    const itemToEdit = getFromDatabaseById(reqType, id);
+
+    if (!itemToEdit || Object.keys(req.body).length === 0) {
+        //console.log('debug here');
         res.status(404).send();
     }
- 
-    const {name, title, weaknesses, salary} = req.body;
 
-    if (name) {minion.name = name};
-    if (title) {minion.title = title};
-    if (weaknesses) {minion.weaknesses = weaknesses};
-    if (salary) {minion.salary = salary};
+    const editedItem = Object.assign({}, itemToEdit, req.body);
+    //console.log(`edited item: ${JSON.stringify(editedItem)}`);
 
-    updateInstanceInDatabase('minion', minion);
-    res.send(minion);
+    const updatedItem = updateInstanceInDatabase(reqType, editedItem);
+    res.send(updatedItem);
 });
 
-apiRouter.post('/minions', (req, res, next) => {
-    const addMinion = addToDatabase('minions', req.body);
-    res.status(201).send(addMinion);
+apiRouter.post('/:reqType', (req, res, next) => {
+    const addItem = addToDatabase(req.params.reqType, req.body);
+    res.status(201).send(addItem);
 });
 
-apiRouter.delete('/minions/:minionId', (req, res, next) => {
-    const deleted = deleteFromDatabasebyId('minions', req.params.minionId);
+apiRouter.delete('/:reqType/:id', (req, res, next) => {
+    const deleted = deleteFromDatabasebyId(req.params.reqType, req.params.id);
     if (deleted) {
         res.status(204).send();
     } else {
