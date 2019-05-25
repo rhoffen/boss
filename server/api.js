@@ -13,7 +13,7 @@ const {
 
 const checkMillionDollarIdea = require('./checkMillionDollarIdea.js');
 
-//checkMillionDollarIdea check for /ideas POST and PUT routes
+//checkMillionDollarIdea check for /ideas POST route
 apiRouter.post('/ideas', checkMillionDollarIdea);
 
 //check whether ID is valid for PUT route before checkMillionDollarIdea
@@ -24,11 +24,13 @@ apiRouter.put('/ideas/:id', (req, res, next) => {
     next();
 },checkMillionDollarIdea);
 
+//get route for all request types but work
 apiRouter.get(`/:reqType`, (req, res, next) => { 
     const list = getAllFromDatabase(req.params.reqType);
     res.send(list);
   });
 
+//get by ID route for all request types but work
 apiRouter.get('/:reqType/:id', (req, res, next) => {
     const item = getFromDatabaseById(req.params.reqType, req.params.id);
     if (!item) {
@@ -37,6 +39,7 @@ apiRouter.get('/:reqType/:id', (req, res, next) => {
     res.send(item);
 });
 
+//put route for all request types but work
 apiRouter.put('/:reqType/:id', (req, res, next) => {
     const id = req.params.id;
     const reqType = req.params.reqType;
@@ -53,6 +56,7 @@ apiRouter.put('/:reqType/:id', (req, res, next) => {
     res.send(updatedItem);
 });
 
+//post route for all request types but work
 apiRouter.post('/:reqType', (req, res, next) => {
     let itemToAdd;
     const reqType = req.params.reqType;
@@ -65,6 +69,7 @@ apiRouter.post('/:reqType', (req, res, next) => {
     res.status(201).send(addItem);
 });
 
+//delete by id route for all request types but meeting and work
 apiRouter.delete('/:reqType/:id', (req, res, next) => {
     const reqType = req.params.reqType;
     const deleted = deleteFromDatabasebyId(reqType, req.params.id);
@@ -76,10 +81,23 @@ apiRouter.delete('/:reqType/:id', (req, res, next) => {
     }
 });
 
+//delete all route for /meetings
 apiRouter.delete('/meetings', (req, res, next) => {
     const deleted = deleteAllFromDatabase('meetings');
     res.status(204).send(deleted);
 });
 
+//bonus route - get array of all work for a specified minion
+//apiRouter.get('', (req, res, next) => {});
+apiRouter.get('/minions/:id/work', (req, res, next) => {
+    const minionId = req.params.id;
+    const minion = getFromDatabaseById('minions', minionId);
+    if (!minion) {
+        return res.status(404).send();
+    }
+    const allWork = getAllFromDatabase('work'); //this is an array of objects    
+    let workArray = allWork.filter(work => work.minionId = minionId);
+    return res.status(200).send(workArray);
+});
 
 module.exports = apiRouter;
