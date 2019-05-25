@@ -1,6 +1,5 @@
 const express = require('express');
 const apiRouter = express.Router();
-//const app = express();
 
 const {
     createMeeting,
@@ -14,24 +13,16 @@ const {
 
 const checkMillionDollarIdea = require('./checkMillionDollarIdea.js');
 
-apiRouter.use('/', (req, res, next) => {
-    const url = req.path;
-    const getRequestRoute = (url) => {
-    url.split('/').filter(segment => segment);
-    }
-    const reqType = getRequestRoute[0];
-    req.params.reqType = reqType;
-    req.path = `/${reqType}`
-    if (getRequestRoute[1]) {
-        reqId = getRequestRoute[1];
-        req.params.id = reqId;
-        req.path += `/${id}`
-    };
-    next();
-});
-
+//checkMillionDollarIdea check for /ideas POST and PUT routes
 apiRouter.post('/ideas', checkMillionDollarIdea);
-apiRouter.put('/ideas:id', checkMillionDollarIdea);
+
+//check whether ID is valid for PUT route before checkMillionDollarIdea
+apiRouter.put('/ideas/:id', (req, res, next) => {
+    if(!getFromDatabaseById('ideas', req.params.id)) {
+        return res.status(404).send();
+    }
+    next();
+},checkMillionDollarIdea);
 
 apiRouter.get(`/:reqType`, (req, res, next) => { 
     const list = getAllFromDatabase(req.params.reqType);
