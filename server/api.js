@@ -70,7 +70,7 @@ apiRouter.post('/:reqType', (req, res, next) => {
 });
 
 //delete by id route for all request types but meeting and work
-apiRouter.delete('/:reqType/:id', (req, res, next) => {
+apiRouter.delete(['/:reqType/:id', '/minions/:minionId/:reqType/:id'], (req, res, next) => {
     const reqType = req.params.reqType;
     const deleted = deleteFromDatabasebyId(reqType, req.params.id);
     
@@ -98,6 +98,31 @@ apiRouter.get('/minions/:id/work', (req, res, next) => {
     const allWork = getAllFromDatabase('work'); //this is an array of objects    
     let workArray = allWork.filter(work => work.minionId = minionId);
     return res.status(200).send(workArray);
+});
+
+apiRouter.put('/minions/:id/work/:workId', (req, res, next) => {
+    const minionId = req.params.id;
+    const minion = getFromDatabaseById('minions', minionId);
+    if (!minion) {
+        return res.status(404).send();
+    }
+
+    const workId = req.params.workId;
+    const workItem = getFromDatabaseById('work', workId);
+    if (!workItem) {
+        return res.status(404).send();
+    }
+
+    const reqMinionId = req.body.minionId;
+    if (!getFromDatabaseById('minions', reqMinionId)) {
+        return res.status(400).send();
+    }
+
+    const editedWorkObj = Object.assign({}, workItem, req.body);
+    
+    const updatedWorkObj = updateInstanceInDatabase('work', editedWorkObj);
+
+    res.status(201).send(updatedWorkObj);
 });
 
 module.exports = apiRouter;
