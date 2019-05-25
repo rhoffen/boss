@@ -57,7 +57,7 @@ apiRouter.put('/:reqType/:id', (req, res, next) => {
 });
 
 //post route for all request types but work
-apiRouter.post('/:reqType', (req, res, next) => {
+apiRouter.post(['/:reqType', '/minions/:minionId/:reqType'], (req, res, next) => {
     let itemToAdd;
     const reqType = req.params.reqType;
     if (reqType === "meetings") {
@@ -88,7 +88,6 @@ apiRouter.delete('/meetings', (req, res, next) => {
 });
 
 //bonus route - get array of all work for a specified minion
-//apiRouter.get('', (req, res, next) => {});
 apiRouter.get('/minions/:id/work', (req, res, next) => {
     const minionId = req.params.id;
     const minion = getFromDatabaseById('minions', minionId);
