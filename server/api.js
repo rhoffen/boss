@@ -12,9 +12,9 @@ const {
     deleteAllFromDatabase,
   } = require('./db.js');
 
+const checkMillionDollarIdea = require('./checkMillionDollarIdea.js');
+
 apiRouter.use('/', (req, res, next) => {
-    //console.log(req.method);
-    //console.log(req.path);
     const url = req.path;
     const getRequestRoute = (url) => {
     url.split('/').filter(segment => segment);
@@ -27,15 +27,14 @@ apiRouter.use('/', (req, res, next) => {
         req.params.id = reqId;
         req.path += `/${id}`
     };
-    //console.log(req.path);
     next();
 });
 
-//apiRouter.get('/minions', (req, res, next) => {
+apiRouter.post('/ideas', checkMillionDollarIdea);
+apiRouter.put('/ideas:id', checkMillionDollarIdea);
+
 apiRouter.get(`/:reqType`, (req, res, next) => { 
-    //const minionsList = getAllFromDatabase('minions');
     const list = getAllFromDatabase(req.params.reqType);
-    //res.send(minionsList);
     res.send(list);
   });
 
@@ -53,25 +52,32 @@ apiRouter.put('/:reqType/:id', (req, res, next) => {
   
     const itemToEdit = getFromDatabaseById(reqType, id);
 
-    if (!itemToEdit || Object.keys(req.body).length === 0) {
-        //console.log('debug here');
-        res.status(404).send();
+    if (!itemToEdit) {
+        return res.status(404).send();
     }
 
     const editedItem = Object.assign({}, itemToEdit, req.body);
-    //console.log(`edited item: ${JSON.stringify(editedItem)}`);
 
     const updatedItem = updateInstanceInDatabase(reqType, editedItem);
     res.send(updatedItem);
 });
 
 apiRouter.post('/:reqType', (req, res, next) => {
-    const addItem = addToDatabase(req.params.reqType, req.body);
+    let itemToAdd;
+    const reqType = req.params.reqType;
+    if (reqType === "meetings") {
+        itemToAdd = createMeeting();
+    } else {
+        itemToAdd = req.body;
+    }
+    addItem = addToDatabase(reqType, itemToAdd);
     res.status(201).send(addItem);
 });
 
 apiRouter.delete('/:reqType/:id', (req, res, next) => {
-    const deleted = deleteFromDatabasebyId(req.params.reqType, req.params.id);
+    const reqType = req.params.reqType;
+    const deleted = deleteFromDatabasebyId(reqType, req.params.id);
+    
     if (deleted) {
         res.status(204).send();
     } else {
@@ -79,7 +85,10 @@ apiRouter.delete('/:reqType/:id', (req, res, next) => {
     }
 });
 
-
+apiRouter.delete('/meetings', (req, res, next) => {
+    const deleted = deleteAllFromDatabase('meetings');
+    res.status(204).send(deleted);
+});
 
 
 module.exports = apiRouter;
