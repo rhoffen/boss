@@ -23,18 +23,11 @@ app.use(bodyParser.json());
 
 app.use('/api', apiRouter);
 
-
-// app.param('minionId', (req, res, next, id) => {
-//   const minionId = Number(id);
-//   req.id = minionId;
-//   next();
-// });
-
 // This conditional is here for testing purposes:
 if (!module.parent) { 
   // Add your code to start the server listening at PORT below:
 
-  server.listen(PORT, err => {
+  app.listen(PORT, err => {
     if (err) {
       return console.log('Server did not start successfully: ', err);
     }
