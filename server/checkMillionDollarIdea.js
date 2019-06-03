@@ -1,11 +1,12 @@
 const checkMillionDollarIdea = (req, res, next) => {
-    const numWeeks = req.body.numWeeks;
-    const weeklyRevenue = req.body.weeklyRevenue;
+    const numWeeks = Number(req.body.numWeeks);
+    const weeklyRevenue = Number(req.body.weeklyRevenue);
     const value =  numWeeks * weeklyRevenue;
 
-    if (value < 1000000 || !numWeeks || !weeklyRevenue || typeof numWeeks !== 'number' || typeof weeklyRevenue !== 'number') {
+    if (value < 1000000 || !value) {
         return res.status(400).send();
     }
+    
     next();
 };
 

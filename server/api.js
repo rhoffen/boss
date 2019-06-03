@@ -65,6 +65,11 @@ apiRouter.post(['/:reqType', '/minions/:minionId/:reqType'], (req, res, next) =>
     } else {
         itemToAdd = req.body;
     }
+    if (reqType === 'ideas') {
+        console.log('debug2: ideas POST');
+    };
+    
+    
     addItem = addToDatabase(reqType, itemToAdd);
     res.status(201).send(addItem);
 });
